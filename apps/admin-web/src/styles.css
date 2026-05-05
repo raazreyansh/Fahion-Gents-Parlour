@@ -17,6 +17,7 @@ body {
 button,
 a {
   font: inherit;
+  cursor: pointer;
 }
 
 main {
@@ -31,6 +32,8 @@ main {
 .sidebar {
   border-right: 1px solid rgba(212, 175, 55, 0.18);
   padding: 28px;
+  display: flex;
+  flex-direction: column;
 }
 
 .brand {
@@ -71,12 +74,15 @@ p,
 nav {
   display: grid;
   gap: 8px;
+  flex: 1;
 }
 
 nav a,
 .toggle,
 .panel-head button,
-.booking-actions button {
+.booking-actions button,
+.login-btn,
+.logout-btn {
   border: 1px solid rgba(212, 175, 55, 0.2);
   color: #f8f1e7;
   background: rgba(255, 255, 255, 0.04);
@@ -90,11 +96,18 @@ nav a,
 
 nav a.active,
 .toggle.on,
-.booking-actions button {
+.booking-actions button,
+.login-btn {
   background: #f4c430;
   color: #1a1614;
   border-color: #f4c430;
   font-weight: 700;
+}
+
+.logout-btn {
+  margin-top: 20px;
+  justify-content: center;
+  border-color: rgba(255, 180, 171, 0.3);
 }
 
 .content {
@@ -185,7 +198,8 @@ p {
 }
 
 .booking.next {
-  border-color: #d4af37;
+  border-color: #f4c430;
+  background: rgba(244, 196, 48, 0.05);
 }
 
 .booking.done {
@@ -193,7 +207,7 @@ p {
 }
 
 .booking time {
-  color: #d4af37;
+  color: #f4c430;
   font-weight: 800;
 }
 
@@ -216,25 +230,60 @@ p {
   text-align: left;
 }
 
-.bar {
+.service-row em.active {
+  color: #16D89A;
+}
+
+.service-row em.hidden {
+  color: #FFB4AB;
+}
+
+/* Auth & Loading */
+.loading-screen {
+  height: 100vh;
   display: grid;
-  grid-template-columns: 86px 1fr 32px;
-  gap: 12px;
-  align-items: center;
-  margin: 16px 0;
+  place-items: center;
 }
 
-.bar div {
-  height: 10px;
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 9999px;
-  overflow: hidden;
+.spinner {
+  animation: spin 1s linear infinite;
+  color: #f4c430;
 }
 
-.bar i {
-  display: block;
-  height: 100%;
-  border-radius: inherit;
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.login-gate {
+  height: 100vh;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at center, rgba(212, 175, 55, 0.1), transparent);
+}
+
+.login-card {
+  text-align: center;
+  padding: 48px;
+  border-radius: 24px;
+  background: rgba(36, 30, 26, 0.95);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  width: 100%;
+  max-width: 400px;
+}
+
+.login-card h1 {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.login-card p {
+  margin-bottom: 32px;
+}
+
+.login-btn {
+  width: 100%;
+  justify-content: center;
 }
 
 @media (max-width: 900px) {

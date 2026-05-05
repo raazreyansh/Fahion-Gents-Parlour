@@ -1,6 +1,6 @@
 node_modules
 dist
-.env
+apps/mobile/.env
 .env.*
 !.env.example
 .expo
@@ -11,3 +11,9 @@ web-build
 test-results/
 playwright-report/
 blob-report/
+
+# Firebase / Google Services
+google-services.json
+google_services.json
+**/google-services.json
+**/google_services.json
