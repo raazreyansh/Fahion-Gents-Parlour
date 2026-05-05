@@ -1,0 +1,20 @@
+{
+  "expo": {
+    "name": "Fashion Gents Parlour",
+    "slug": "fashion-gents-parlour",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "fashiongents",
+    "userInterfaceStyle": "dark",
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    },
+    "android": {
+      "package": "com.fashiongents.parlour"
+    },
+    "ios": {
+      "bundleIdentifier": "com.fashiongents.parlour"
+    }
+  }
+}

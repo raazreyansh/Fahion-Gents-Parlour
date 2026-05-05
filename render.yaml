@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: fashion-gents-api
+    env: node
+    plan: starter
+    buildCommand: npm install && npm run build -w packages/shared && npm run build -w apps/api
+    startCommand: npm run start -w apps/api
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 20.11.1
+      - key: API_PORT
+        value: 4000
+      - key: API_BASE_URL
+        sync: false
+      - key: WEB_BASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: PLATFORM_UPI_ID
+        sync: false
+      - key: PLATFORM_PAYEE_NAME
+        value: Fashion Gents Parlour
+      - key: PLATFORM_FEE_INR
+        value: 590

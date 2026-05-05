@@ -1,0 +1,29 @@
+{
+  "name": "fashion-gents-parlour",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Fashion Gents Parlour salon booking and management platform",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:api": "npm run dev -w apps/api",
+    "dev:admin": "npm run dev -w apps/admin-web",
+    "dev:mobile": "npm run start -w apps/mobile",
+    "test": "npm run test -w packages/shared && npm run test -w apps/api",
+    "test:mobile:e2e": "playwright test e2e-mobile-section-smoke.spec.ts --browser=chromium",
+    "build": "npm run build -w packages/shared && npm run build -w apps/api && npm run build -w apps/admin-web",
+    "lint": "npm run lint -ws --if-present"
+  },
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.59.1",
+    "@types/node": "^22.15.3",
+    "prettier": "^3.5.3",
+    "typescript": "^5.8.3",
+    "vitest": "^3.1.2"
+  }
+}
