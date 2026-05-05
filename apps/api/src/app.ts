@@ -11,17 +11,17 @@ import {
   generateSlots, 
   googleAuthSchema, 
   updateServiceSchema, 
-  hasBookingOverlap 
+  hasBookingOverlap,
+  addMinutes, 
+  calculateServiceTotal 
 } from "@fgp/shared";
 import { adminRequired, authRequired, signAccessToken } from "./auth.js";
 import { config } from "./config.js";
 import { HttpError, errorHandler } from "./errors.js";
 import { supabase } from "./supabase.js";
-import { addMinutes, calculateServiceTotal } from "@fgp/shared";
 
 const googleClient = new OAuth2Client(config.googleClientId);
 
-// Rate Limiting
 const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   limit: 100,
@@ -143,7 +143,7 @@ export function createApp() {
         .eq("is_active", true);
       
       if (error) throw error;
-      response.json({ services });
+      response.json({ services: services || [] });
     } catch (error) {
       next(error);
     }
@@ -185,8 +185,9 @@ export function createApp() {
       
       const { data: services, error: svcError } = await supabase.from("services").select("*").in("id", body.serviceIds);
       if (svcError) throw svcError;
+      if (!services) throw new HttpError(400, "Selected services not found");
 
-      const total = calculateServiceTotal(body.serviceIds, services);
+      const total = calculateServiceTotal(body.serviceIds, services as any);
       const booking = {
         customer_id: request.user!.sub,
         date: body.date,
@@ -201,7 +202,7 @@ export function createApp() {
       const { data: existingBookings, error: bksError } = await supabase.from("bookings").select("*").eq("date", body.date).neq("status", "cancelled");
       if (bksError) throw bksError;
 
-      const mappedBookings = existingBookings.map(b => ({ ...b, startTime: b.start_time, endTime: b.end_time }));
+      const mappedBookings = (existingBookings || []).map((b: any) => ({ ...b, startTime: b.start_time, endTime: b.end_time }));
       const mappedNewBooking = { ...booking, startTime: booking.start_time, endTime: booking.end_time } as any;
 
       if (hasBookingOverlap(mappedNewBooking, mappedBookings)) {
@@ -214,10 +215,10 @@ export function createApp() {
         .select()
         .single();
       
-      if (saveError) throw saveError;
+      if (saveError || !savedBooking) throw saveError || new Error("Failed to save booking");
 
       const bookingServices = body.serviceIds.map(sid => {
-        const s = services.find(x => x.id === sid)!;
+        const s = (services as any[]).find(x => x.id === sid)!;
         return { booking_id: savedBooking.id, service_id: sid, price_inr: s.price_inr, duration_minutes: s.duration_minutes };
       });
       await supabase.from("booking_services").insert(bookingServices);
@@ -240,7 +241,7 @@ export function createApp() {
         .order("date", { ascending: false });
       
       if (error) throw error;
-      response.json({ bookings });
+      response.json({ bookings: bookings || [] });
     } catch (error) {
       next(error);
     }
@@ -277,7 +278,6 @@ export function createApp() {
     }
   });
 
-  // Admin Endpoints
   app.get("/api/admin/bookings/today", authRequired, adminRequired, async (_request, response, next) => {
     try {
       const today = new Date().toISOString().slice(0, 10);
@@ -288,7 +288,7 @@ export function createApp() {
         .order("start_time", { ascending: true });
       
       if (error) throw error;
-      response.json({ bookings });
+      response.json({ bookings: bookings || [] });
     } catch (error) {
       next(error);
     }
@@ -354,8 +354,8 @@ export function createApp() {
       if (error) throw error;
       
       response.json({
-        dailyInr: completed.reduce((sum, b) => sum + b.total_amount, 0),
-        completedCount: completed.length
+        dailyInr: (completed || []).reduce((sum, b) => sum + b.total_amount, 0),
+        completedCount: (completed || []).length
       });
     } catch (error) {
       next(error);
@@ -364,7 +364,6 @@ export function createApp() {
 
   app.get("/api/admin/analytics", authRequired, adminRequired, async (_request, response, next) => {
     try {
-      // In a real app, these would be complex aggregate queries
       response.json({
         popularServices: [],
         noShowRate: 0,
