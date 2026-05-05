@@ -1,6 +1,6 @@
 node_modules
 dist
-apps/mobile/.env
+supabase/.env
 .env.*
 !.env.example
 .expo
